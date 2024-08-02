@@ -13,8 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +39,7 @@ public class ToonScrapingService {
         }
 
         final Matcher toonMatcher = TOON_PATTERN.matcher(document.html());
-        final List<ToonHQToon> toons = new ArrayList<>();
+        int numberToons = 0;
 
         while (toonMatcher.find()) {
             final String toonJson = toonMatcher.group(1);
@@ -54,14 +52,17 @@ public class ToonScrapingService {
                 continue;
             }
 
-            if (toonHQToon.id() == 0 | toonHQToon.photo() == null || toonHQToon.game() != 1) {
+            if (toonHQToon.id() == 0 || toonHQToon.photo() == null || toonHQToon.game() != 1) {
                 continue;
             }
 
-            toons.add(toonHQToon);
+            numberToons++;
         }
 
-        Gauge.builder("toonhq.toons", toons, List::size)
+        log.info("Scraped {} toons from ToonHQ", numberToons);
+        final int finalNumberToons = numberToons;
+        Gauge.builder("toonhq_number_toons", () -> finalNumberToons)
+                .tag("type", "toonsync")
                 .register(this.meterRegistry);
     }
 }

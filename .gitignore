@@ -32,6 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
+/grafana_data/
 /prometheus-data/
 /grafana/
 /olivia-data/

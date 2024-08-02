@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.util.List;
 
 @Component
@@ -45,6 +46,7 @@ public class UserCommand implements ICommand {
         }
 
         final MessageEmbed embed = new EmbedBuilder()
+                .setColor(Color.PINK)
                 .setTitle("Character data for %s".formatted(characterData.name))
                 .setDescription("Lv. %d | %s".formatted(characterData.level, characterData.server))
                 .setImage(characterData.characterImageURL)

@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +19,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CommandLoader {
-    private static final Logger log = LoggerFactory.getLogger(CommandLoader.class);
+    private static final Logger log = LogManager.getLogger();
+
     private static final Path OLIVIA_DATA_PATH = Path.of("olivia-data", "olivia-commands.json");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

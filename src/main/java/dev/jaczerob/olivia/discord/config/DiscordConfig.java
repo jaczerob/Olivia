@@ -2,6 +2,7 @@ package dev.jaczerob.olivia.discord.config;
 
 import dev.jaczerob.olivia.discord.commands.CommandHandler;
 import dev.jaczerob.olivia.discord.commands.ICommand;
+import dev.jaczerob.olivia.discord.listeners.EventListener;
 import io.micrometer.core.instrument.MeterRegistry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -44,7 +45,8 @@ public class DiscordConfig {
     ) {
         return JDABuilder.createLight(token)
 
-                .addEventListeners(new CommandHandler(commands, meterRegistry))
+                .setEventPassthrough(true)
+                .addEventListeners(new CommandHandler(commands, meterRegistry), new EventListener(meterRegistry))
 
                 .disableIntents(Arrays.asList(GatewayIntent.values()))
 
@@ -53,7 +55,6 @@ public class DiscordConfig {
                 .setGatewayPool(scheduledExecutorService)
                 .setAudioPool(scheduledExecutorService)
 
-                .setActivity(Activity.playing("guts"))
                 .setActivity(Activity.of(activityType, activityMessage))
 
                 .build();

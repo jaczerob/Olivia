@@ -2,8 +2,8 @@ package dev.jaczerob.olivia;
 
 import jakarta.annotation.PreDestroy;
 import net.dv8tion.jda.api.JDA;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +18,7 @@ import java.util.List;
 @SpringBootApplication
 @EnableFeignClients
 public class OliviaApplication {
-    private static final Logger log = LoggerFactory.getLogger(OliviaApplication.class);
+    private static final Logger log = LogManager.getLogger();
 
     static {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");

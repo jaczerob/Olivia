@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" strict="true" monitorInterval="30">
+    <Appenders>
+        <Appender type="Console" name="STDOUT">
+            <Layout type="JsonTemplateLayout" eventTemplateUri="classpath:EcsLayout.json"/>
+        </Appender>
+        <Socket name="socket" host="logstash" port="9999" reconnectionDelayMillis="5000">
+            <Layout type="JsonTemplateLayout" eventTemplateUri="classpath:EcsLayout.json"/>
+        </Socket>
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="socket"/>
+        </Root>
+    </Loggers>
+</Configuration>

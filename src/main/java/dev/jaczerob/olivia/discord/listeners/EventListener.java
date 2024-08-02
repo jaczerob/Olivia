@@ -14,9 +14,6 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onGenericEvent(final GenericEvent event) {
-        Counter.builder("discord.event.count")
-                .tag("name", event.getClass().getSimpleName())
-                .register(this.meterRegistry)
-                .increment();
+        Counter.builder("discord.event.count").tag("name", event.getClass().getSimpleName()).register(this.meterRegistry).increment();
     }
 }

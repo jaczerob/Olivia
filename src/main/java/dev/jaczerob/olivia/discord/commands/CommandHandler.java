@@ -24,10 +24,27 @@ public class CommandHandler extends ListenerAdapter {
 
     private final List<ICommand> commandList;
     private final MeterRegistry meterRegistry;
+    private final Map<String, Counter> commandsUsageCounters = new ConcurrentHashMap<>();
+    private final Map<String, Timer> commandsExecutionTimers = new ConcurrentHashMap<>();
 
     public CommandHandler(final List<ICommand> commands, final MeterRegistry meterRegistry) {
         this.commandList = commands;
         this.meterRegistry = meterRegistry;
+
+        commands.forEach(command -> {
+            this.commandsUsageCounters.put(command.name(), Counter.builder("olivia_command_use")
+                    .tag("type", "slash")
+                    .tag("name", command.name())
+                    .description("The number of slash commands used")
+                    .register(meterRegistry)
+            );
+
+            this.commandsExecutionTimers.put(command.name(), Timer.builder("olivia_command_time")
+                    .tag("type", "slash")
+                    .tag("name", command.name())
+                    .description("The time it takes a slash command to process")
+                    .register(meterRegistry));
+        });
     }
 
     @Override
@@ -58,24 +75,14 @@ public class CommandHandler extends ListenerAdapter {
         ThreadContext.put("olivia.commandName", commandName);
         ThreadContext.put("olivia.commandType", "slash");
 
-        Counter.builder("olivia_command_use")
-                .tag("type", "slash")
-                .tag("name", commandName)
-                .description("The number of slash commands used")
-                .register(meterRegistry)
-                .increment();
+        this.commandsUsageCounters.get(commandName).increment();
 
         log.info("Handling command {}", commandName);
 
         final ICommand command = this.commandMap.get(commandName);
         final CommandContext context = new CommandContext(event);
 
-        Timer.builder("olivia_command_time")
-                .tag("type", "slash")
-                .tag("name", commandName)
-                .description("The time it takes a slash command to process")
-                .register(meterRegistry)
-                .record(() -> executeCommand(command, context));
+        this.commandsExecutionTimers.get(commandName).record(() -> executeCommand(command, context));
 
         ThreadContext.clearMap();
     }

@@ -8,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +24,14 @@ public class ToonScrapingService {
     private static final String TOON_HQ_URL = "https://toonhq.org/groups";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Autowired
-    private MeterRegistry meterRegistry;
+    private final AtomicInteger numberToons = new AtomicInteger();
+
+    public ToonScrapingService(final MeterRegistry meterRegistry) {
+        Gauge.builder("toonhq_number_toons", this.numberToons, AtomicInteger::get)
+                .tag("type", "toonsync")
+                .register(meterRegistry)
+                .measure();
+    }
 
     @Scheduled(fixedRate = 60 * 1000)
     public void findToons() {
@@ -39,7 +45,7 @@ public class ToonScrapingService {
         }
 
         final Matcher toonMatcher = TOON_PATTERN.matcher(document.html());
-        int numberToons = 0;
+        int newNumberToons = 0;
 
         while (toonMatcher.find()) {
             final String toonJson = toonMatcher.group(1);
@@ -56,13 +62,10 @@ public class ToonScrapingService {
                 continue;
             }
 
-            numberToons++;
+            newNumberToons++;
         }
 
-        log.info("Scraped {} toons from ToonHQ", numberToons);
-        final int finalNumberToons = numberToons;
-        Gauge.builder("toonhq_number_toons", () -> finalNumberToons)
-                .tag("type", "toonsync")
-                .register(this.meterRegistry);
+        log.info("Scraped {} toons from ToonHQ", newNumberToons);
+        this.numberToons.set(newNumberToons);
     }
 }

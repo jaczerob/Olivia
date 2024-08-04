@@ -311,6 +311,10 @@ public class ToonStatsService {
         Gauge.builder("amount_organic_gags", this.amountToonsWithOrganicDrop, AtomicInteger::get)
                 .tag("gag", "drop")
                 .register(meterRegistry);
+
+        Gauge.builder("amount_organic_gags", this.amountToonsWithNoOrganic, AtomicInteger::get)
+                .tag("gag", "none")
+                .register(meterRegistry);
     }
 
     @Scheduled(fixedRate = 60 * 1000)

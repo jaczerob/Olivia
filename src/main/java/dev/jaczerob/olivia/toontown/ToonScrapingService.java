@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,13 +26,22 @@ public class ToonScrapingService {
     private static final String TOON_HQ_URL = "https://toonhq.org/groups";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final AtomicInteger numberToons = new AtomicInteger();
+    private final AtomicInteger toonsyncedToons = new AtomicInteger();
+    private final AtomicInteger nonToonsyncedToons = new AtomicInteger();
+    private final ToonRepository toonRepository;
 
-    public ToonScrapingService(final MeterRegistry meterRegistry) {
-        Gauge.builder("toonhq_number_toons", this.numberToons, AtomicInteger::get)
+    public ToonScrapingService(final MeterRegistry meterRegistry, final ToonRepository toonRepository) {
+        Gauge.builder("toonhq_number_toons", this.toonsyncedToons, AtomicInteger::get)
                 .tag("type", "toonsync")
                 .register(meterRegistry)
                 .measure();
+
+        Gauge.builder("toonhq_number_toons", this.nonToonsyncedToons, AtomicInteger::get)
+                .tag("type", "non-toonsync")
+                .register(meterRegistry)
+                .measure();
+
+        this.toonRepository = toonRepository;
     }
 
     @Scheduled(fixedRate = 60 * 1000)
@@ -45,7 +56,8 @@ public class ToonScrapingService {
         }
 
         final Matcher toonMatcher = TOON_PATTERN.matcher(document.html());
-        int newNumberToons = 0;
+        int nonToonsycnedToons = 0;
+        final List<ToonHQToon> toons = new ArrayList<>();
 
         while (toonMatcher.find()) {
             final String toonJson = toonMatcher.group(1);
@@ -58,14 +70,19 @@ public class ToonScrapingService {
                 continue;
             }
 
-            if (toonHQToon.id() == 0 || toonHQToon.photo() == null || toonHQToon.game() != 1) {
+            if (toonHQToon.getGame() != 1) {
+                continue;
+            } else if (toonHQToon.getId() == 0 || toonHQToon.getPhoto() == null) {
+                nonToonsycnedToons++;
                 continue;
             }
 
-            newNumberToons++;
+            toons.add(toonHQToon);
         }
 
-        log.info("Scraped {} toons from ToonHQ", newNumberToons);
-        this.numberToons.set(newNumberToons);
+        this.nonToonsyncedToons.set(nonToonsycnedToons);
+        this.toonsyncedToons.set(toons.size());
+        this.toonRepository.saveAll(toons);
+        log.info("Scraped {} toons from ToonHQ", toons.size());
     }
 }

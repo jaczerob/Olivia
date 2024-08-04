@@ -40,3 +40,4 @@ build/
 /elk/
 docker-compose.yml
 Dockerfile
+/mongo-data/

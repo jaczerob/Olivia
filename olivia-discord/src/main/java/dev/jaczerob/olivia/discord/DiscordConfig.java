@@ -1,8 +1,8 @@
-package dev.jaczerob.olivia.bot.discord.config;
+package dev.jaczerob.olivia.discord;
 
-import dev.jaczerob.olivia.bot.discord.commands.CommandHandler;
-import dev.jaczerob.olivia.bot.discord.commands.ICommand;
-import dev.jaczerob.olivia.bot.discord.listeners.EventListener;
+import dev.jaczerob.olivia.discord.commands.CommandHandler;
+import dev.jaczerob.olivia.discord.commands.ICommand;
+import dev.jaczerob.olivia.discord.listeners.EventListener;
 import io.micrometer.core.instrument.MeterRegistry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,6 +36,7 @@ public class DiscordConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public JDA jda(
             final @Value("${discord.token:}") String token,
             final @Value("${discord.status.type}") Activity.ActivityType activityType,

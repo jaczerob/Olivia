@@ -10,8 +10,10 @@
         <version>2024.08.13</version>
     </parent>
 
-    <groupId>dev.jaczerob.olivia.ttr</groupId>
     <artifactId>ttr</artifactId>
+
+    <name>olivia-ttr</name>
+    <description>olivia-ttr</description>
 
     <properties>
         <java.version>21</java.version>

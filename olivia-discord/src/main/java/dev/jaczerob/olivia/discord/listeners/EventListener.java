@@ -1,4 +1,4 @@
-package dev.jaczerob.olivia.bot.discord.listeners;
+package dev.jaczerob.olivia.discord.listeners;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

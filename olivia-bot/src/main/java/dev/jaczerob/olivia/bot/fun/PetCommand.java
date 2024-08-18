@@ -1,7 +1,7 @@
-package dev.jaczerob.olivia.bot.discord.commands.fun;
+package dev.jaczerob.olivia.bot.fun;
 
-import dev.jaczerob.olivia.bot.discord.commands.CommandContext;
-import dev.jaczerob.olivia.bot.discord.commands.ICommand;
+import dev.jaczerob.olivia.discord.commands.CommandContext;
+import dev.jaczerob.olivia.discord.commands.ICommand;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.stereotype.Component;

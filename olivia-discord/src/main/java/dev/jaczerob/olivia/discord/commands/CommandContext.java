@@ -1,4 +1,4 @@
-package dev.jaczerob.olivia.bot.discord.commands;
+package dev.jaczerob.olivia.discord.commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.entities.MessageEmbed;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PopulationResponse {
@@ -23,7 +22,7 @@ public class PopulationResponse {
                 district,
                 populationByDistrict.get(district),
                 statusByDistrict.get(district)
-        )).collect(Collectors.toMap(PopulationDistrictResponse::getName, Function.identity()));
+        )).collect(Collectors.toMap(PopulationDistrictResponse::getName, v -> v));
     }
 
     public int getTotalPopulation() {

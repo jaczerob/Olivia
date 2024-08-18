@@ -16,12 +16,30 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <discord-webhooks.version>0.8.4</discord-webhooks.version>
+        <json.version>20240303</json.version>
+        <jsoup.version>1.18.1</jsoup.version>
         <spring-boot-dependencies.version>3.3.2</spring-boot-dependencies.version>
         <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>club.minnced</groupId>
+                <artifactId>discord-webhooks</artifactId>
+                <version>${discord-webhooks.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>

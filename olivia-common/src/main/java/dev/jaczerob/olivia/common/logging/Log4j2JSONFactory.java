@@ -1,4 +1,4 @@
-package dev.jaczerob.olivia.common;
+package dev.jaczerob.olivia.common.logging;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;

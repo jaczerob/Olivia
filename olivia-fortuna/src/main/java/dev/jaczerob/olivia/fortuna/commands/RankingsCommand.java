@@ -3,7 +3,7 @@ package dev.jaczerob.olivia.fortuna.commands;
 import dev.jaczerob.olivia.discord.commands.CommandContext;
 import dev.jaczerob.olivia.discord.commands.ICommand;
 import dev.jaczerob.olivia.fortuna.constants.JobIDs;
-import dev.jaczerob.olivia.fortuna.database.models.CharacterEntity;
+import dev.jaczerob.olivia.fortuna.database.models.RankingCharacterEntity;
 import dev.jaczerob.olivia.fortuna.database.repositories.FortunaRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -45,7 +45,7 @@ public class RankingsCommand implements ICommand {
 
     @Override
     public void execute(final CommandContext context) {
-        final List<CharacterEntity> rankingsResponse = this.fortunaRepository.getTopPlayers(AMOUNT_PLAYERS);
+        final List<RankingCharacterEntity> rankingsResponse = this.fortunaRepository.getTopPlayers(AMOUNT_PLAYERS);
         if (rankingsResponse == null || rankingsResponse.isEmpty()) {
             log.error("Failed to get ranking data: {}", rankingsResponse);
             context.reply("Could not get rankings");

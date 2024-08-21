@@ -1,7 +1,6 @@
 package dev.jaczerob.olivia.fortuna.api;
 
 import dev.jaczerob.olivia.fortuna.api.online.OnlineResponse;
-import dev.jaczerob.olivia.fortuna.api.rankings.RankingsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,8 +8,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface FortunaAPIClient {
     @RequestMapping("/server/statistics")
     OnlineResponse getOnlineCount();
-
-    @RequestMapping("/server/rankings")
-    RankingsResponse getRankings();
 }
 

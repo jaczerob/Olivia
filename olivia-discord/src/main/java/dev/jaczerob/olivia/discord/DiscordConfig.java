@@ -52,6 +52,7 @@ public class DiscordConfig {
                 .addEventListeners(new CommandHandler(commands, meterRegistry), new EventListener(meterRegistry))
 
                 .disableIntents(Arrays.asList(GatewayIntent.values()))
+                .setEnabledIntents(List.of(GatewayIntent.GUILD_MEMBERS))
 
                 .setEventPool(executorService)
                 .setCallbackPool(executorService)

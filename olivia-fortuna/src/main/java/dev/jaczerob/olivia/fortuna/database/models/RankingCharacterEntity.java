@@ -4,17 +4,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class CharacterEntity {
+public class RankingCharacterEntity {
     @Id
     private int id;
     private String name;
     private int level;
     private int job;
 
-    protected CharacterEntity() {
+    protected RankingCharacterEntity() {
     }
 
-    public CharacterEntity(final int id, final String name, final int level, final int job) {
+    public RankingCharacterEntity(final int id, final String name, final int level, final int job) {
         this.id = id;
         this.name = name;
         this.level = level;

@@ -17,7 +17,7 @@ import java.util.List;
 @EnableScheduling
 @EnableFeignClients
 public class App {
-    public static void main(final String... args) throws ClassNotFoundException {
+    public static void main(final String... args) {
         SpringApplication.run(App.class, args);
     }
 

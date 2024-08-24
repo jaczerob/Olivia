@@ -8,13 +8,13 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,13 +46,12 @@ public class DiscordConfig {
             final List<ICommand> commands,
             final MeterRegistry meterRegistry
     ) {
-        return JDABuilder.createLight(token)
+        return JDABuilder.create(token, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
 
                 .setEventPassthrough(true)
                 .addEventListeners(new CommandHandler(commands, meterRegistry), new EventListener(meterRegistry))
 
-                .disableIntents(Arrays.asList(GatewayIntent.values()))
-                .setEnabledIntents(List.of(GatewayIntent.GUILD_MEMBERS))
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
 
                 .setEventPool(executorService)
                 .setCallbackPool(executorService)

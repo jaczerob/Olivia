@@ -40,7 +40,7 @@ public class UpdateOnlineCountCron {
         this.onlinePlayersChannelID = onlinePlayersChannelID;
         this.meterRegistry = meterRegistry;
 
-        Gauge.builder("fortuna.players.online", this.onlinePlayers::get)
+        Gauge.builder("fortuna_players_online", this.onlinePlayers, AtomicInteger::get)
                 .tag("channel", "all")
                 .register(meterRegistry);
     }
@@ -64,7 +64,7 @@ public class UpdateOnlineCountCron {
                 this.onlinePlayersPerChannel.put(channelName, population);
 
                 if (initializeGauge) {
-                    Gauge.builder("fortuna.players.online", this.onlinePlayersPerChannel, f -> f.get(channelName)).tag("channel", channelName).register(this.meterRegistry);
+                    Gauge.builder("fortuna_players_online", this.onlinePlayersPerChannel, f -> f.get(channelName)).tag("channel", channelName).register(this.meterRegistry);
                 }
             });
         }

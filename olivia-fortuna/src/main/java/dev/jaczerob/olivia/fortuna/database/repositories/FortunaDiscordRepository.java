@@ -10,7 +10,7 @@ public interface FortunaDiscordRepository extends JpaRepository<DiscordEntity, S
     @Query(
             nativeQuery = true,
             value = """
-                    SELECT u.id, u.discordid, cs.name
+                    SELECT cs.id, u.discordid, cs.name
                       FROM characterstats cs,
                            characters c,
                            users u,

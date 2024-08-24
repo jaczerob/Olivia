@@ -5,6 +5,7 @@ import dev.jaczerob.olivia.fortuna.database.models.DiscordEntity;
 import dev.jaczerob.olivia.fortuna.database.repositories.DiscordRepository;
 import dev.jaczerob.olivia.fortuna.database.repositories.FortunaDiscordRepository;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,19 +53,20 @@ public class UpdateDiscordUsersCron {
 
         final List<DiscordDocument> existingDiscordDocuments = this.discordRepository.findAll();
         existingDiscordDocuments.stream().parallel().forEach(discordDocument -> {
-            if (!discordIDToCharacters.containsKey(discordDocument.getDiscordID()))
+            if (!discordIDToCharacters.containsKey(discordDocument.getId()))
                 return;
 
-            final Set<String> currentFortunaCharacters = discordIDToCharacters.get(discordDocument.getDiscordID());
+            final Set<String> currentFortunaCharacters = discordIDToCharacters.get(discordDocument.getId());
             discordDocument.getFortunaCharacters().addAll(currentFortunaCharacters);
-            final Optional<String> discordUsername = this.getDiscordUsername(discordDocument.getDiscordID());
+            final Optional<String> discordUsername = this.getDiscordUsername(discordDocument.getId());
             discordUsername.ifPresent(s -> discordDocument.getDiscordUsernames().add(s));
 
             final DiscordDocument newDiscordDocument = new DiscordDocument();
-            newDiscordDocument.setDiscordID(discordDocument.getDiscordID());
+            newDiscordDocument.setId(discordDocument.getId());
             newDiscordDocument.setFortunaCharacters(discordDocument.getFortunaCharacters());
+            discordDocument.getDiscordUsernames().remove("");
             newDiscordDocument.setDiscordUsernames(discordDocument.getDiscordUsernames());
-            newDiscordDocuments.put(discordDocument.getDiscordID(), newDiscordDocument);
+            newDiscordDocuments.put(discordDocument.getId(), newDiscordDocument);
         });
 
         discordIDToCharacters.entrySet().stream().parallel().forEach(entry -> {
@@ -78,7 +80,7 @@ public class UpdateDiscordUsersCron {
             else
                 discordDocument.setDiscordUsernames(Set.of());
             discordDocument.setFortunaCharacters(entry.getValue());
-            discordDocument.setDiscordID(entry.getKey());
+            discordDocument.setId(entry.getKey());
             newDiscordDocuments.put(entry.getKey(), discordDocument);
         });
 
@@ -87,6 +89,23 @@ public class UpdateDiscordUsersCron {
     }
 
     private Optional<String> getDiscordUsername(final String id) {
-        return Optional.of("");
+        try {
+            final Member user = this.jda
+                    .getGuildById("1269289543304216669")
+                    .getTextChannelById("1269289543304216675")
+                    .getMembers()
+                    .stream().filter(m -> m.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+            final String userName;
+            if (user != null)
+                userName = user.getUser().getName();
+            else
+                userName = null;
+            return Optional.ofNullable(userName);
+        } catch (final Throwable exc) {
+            log.error(exc);
+            return Optional.empty();
+        }
     }
 }

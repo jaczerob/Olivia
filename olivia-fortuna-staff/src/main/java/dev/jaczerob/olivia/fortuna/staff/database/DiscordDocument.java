@@ -1,6 +1,6 @@
-package dev.jaczerob.olivia.fortuna.database.models;
+package dev.jaczerob.olivia.fortuna.staff.database;
 
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Set;

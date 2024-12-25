@@ -10,19 +10,20 @@ public interface FortunaRepository extends JpaRepository<RankingCharacterEntity,
     @Query(
             nativeQuery = true,
             value = """
-                    SELECT cs.id, cs.name, cs.level, cs.job
-                    FROM characterstats cs,
-                         characters c,
-                         users u,
-                         accounts a
-                    WHERE c.id = cs.id
-                      AND c.accid = a.id
-                      AND a.userid = u.id
-                      AND u.accounttype = 0
-                      AND (u.banExpireDate IS null OR u.banExpireDate <= NOW())
-                    ORDER BY cs.level DESC
-                    LIMIT 5;
+                    select count(id) from users u
+                    where u.clientstate = 2
+                    and u.accounttype = 0;
                     """
     )
-    List<RankingCharacterEntity> getTopPlayers(Integer amount);
+    Integer getOnlineCount();
+
+    @Query(
+            nativeQuery = true,
+            value = """
+                    select u.name
+                    from users u
+                    where discordid = ?1
+                    """
+    )
+    List<String> getUsernameByDiscordID(String discordId);
 }

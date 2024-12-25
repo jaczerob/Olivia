@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 public class CommandLoader {
     private static final Logger log = LogManager.getLogger();
 
-    private static final Path OLIVIA_DATA_PATH = Path.of("olivia-data", "olivia-commands.json");
+    private static final Path DISCORD_DATA_PATH = Path.of("discord-data", "discord-commands.json");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {
-        if (!OLIVIA_DATA_PATH.getParent().toFile().exists()) {
+        if (!DISCORD_DATA_PATH.getParent().toFile().exists()) {
             try {
-                Files.createDirectory(OLIVIA_DATA_PATH.getParent());
+                Files.createDirectory(DISCORD_DATA_PATH.getParent());
             } catch (final IOException exc) {
                 throw new RuntimeException(exc);
             }
@@ -35,14 +35,14 @@ public class CommandLoader {
     }
 
     private static void writeNewCommands(final Map<String, String> commands) throws Exception {
-        OBJECT_MAPPER.writeValue(OLIVIA_DATA_PATH.toFile(), commands);
+        OBJECT_MAPPER.writeValue(DISCORD_DATA_PATH.toFile(), commands);
     }
 
     private static Map<String, String> getExistingCommands() throws Exception {
-        if (!OLIVIA_DATA_PATH.toFile().exists()) {
+        if (!DISCORD_DATA_PATH.toFile().exists()) {
             return Map.of();
         } else {
-            return OBJECT_MAPPER.readValue(OLIVIA_DATA_PATH.toFile(), new TypeReference<>() {
+            return OBJECT_MAPPER.readValue(DISCORD_DATA_PATH.toFile(), new TypeReference<>() {
             });
         }
     }

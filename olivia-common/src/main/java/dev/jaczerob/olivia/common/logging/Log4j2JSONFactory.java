@@ -56,14 +56,6 @@ public class Log4j2JSONFactory extends ConfigurationFactory {
               }
             }""";
 
-    private static String getSystemProperty(final String key, final String defaultValue) {
-        final String envValue = System.getenv(key);
-        if (envValue != null)
-            return envValue;
-
-        return System.getProperty(key, defaultValue);
-    }
-
     @Override
     protected String[] getSupportedTypes() {
         return new String[]{"*"};
@@ -93,23 +85,15 @@ public class Log4j2JSONFactory extends ConfigurationFactory {
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
                 .add(layoutComponentBuilder);
 
-        final AppenderComponentBuilder logstashAppenderComponentBuilder = configurationBuilder.newAppender("Logstash", "SOCKET")
-                .addAttribute("host", getSystemProperty("LOGSTASH_HOST", "logstash"))
-                .addAttribute("port", getSystemProperty("LOGSTASH_PORT", "9999"))
-                .add(layoutComponentBuilder);
-
         final LoggerComponentBuilder projectLoggerComponentBuilder = configurationBuilder.newLogger("dev.jaczerob", Level.DEBUG)
                 .addAttribute("additivity", false)
-                .add(configurationBuilder.newAppenderRef("Stdout"))
-                .add(configurationBuilder.newAppenderRef("Logstash"));
+                .add(configurationBuilder.newAppenderRef("Stdout"));
 
         final RootLoggerComponentBuilder rootLoggerComponentBuilder = configurationBuilder.newRootLogger(Level.ERROR)
-                .add(configurationBuilder.newAppenderRef("Stdout"))
-                .add(configurationBuilder.newAppenderRef("Logstash"));
+                .add(configurationBuilder.newAppenderRef("Stdout"));
 
         configurationBuilder
                 .add(consoleAppenderComponentBuilder)
-                .add(logstashAppenderComponentBuilder)
                 .add(projectLoggerComponentBuilder)
                 .add(rootLoggerComponentBuilder);
 

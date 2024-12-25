@@ -1,19 +1,20 @@
 package dev.jaczerob.olivia.discord.listeners;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.aop.MeterTag;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConditionalOnProperty(value = "discord.listeners.event-tracking.enabled", havingValue = "true", matchIfMissing = true)
 public class EventListener extends ListenerAdapter {
-    private final MeterRegistry meterRegistry;
-
-    public EventListener(final MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
-    }
-
     @Override
-    public void onGenericEvent(final GenericEvent event) {
-        Counter.builder("discord.event.count").tag("name", event.getClass().getSimpleName()).register(this.meterRegistry).increment();
+    @Counted("discord.event.count")
+    public void onGenericEvent(
+            final @MeterTag(value = "event_name", expression = "event.getClass().getSimpleName()") GenericEvent event
+    ) {
+
     }
 }

@@ -1,12 +1,9 @@
 package dev.jaczerob.olivia.discord;
 
-import dev.jaczerob.olivia.discord.commands.CommandHandler;
-import dev.jaczerob.olivia.discord.commands.ICommand;
-import dev.jaczerob.olivia.discord.listeners.EventListener;
-import io.micrometer.core.instrument.MeterRegistry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,20 +35,24 @@ public class DiscordConfig {
     @Bean
     @ConditionalOnMissingBean
     public JDA jda(
-            final @Value("${discord.token:}") String token,
+            final @Value("${discord.token}") String token,
             final @Value("${discord.status.type}") Activity.ActivityType activityType,
             final @Value("${discord.status.message}") String activityMessage,
+            final @Value("${discord.intents:}") List<GatewayIntent> gatewayIntents,
+            final @Value("${discord.cache.members:NONE}") MemberCachePolicy memberCachePolicy,
+
             final @Qualifier("normal") ExecutorService executorService,
             final @Qualifier("scheduled") ScheduledExecutorService scheduledExecutorService,
-            final List<ICommand> commands,
-            final MeterRegistry meterRegistry
+            final List<ListenerAdapter> listeners
     ) {
-        return JDABuilder.create(token, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+        return JDABuilder.create(gatewayIntents)
+
+                .setToken(token)
 
                 .setEventPassthrough(true)
-                .addEventListeners(new CommandHandler(commands, meterRegistry), new EventListener(meterRegistry))
+                .addEventListeners(listeners.toArray())
 
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .setMemberCachePolicy(memberCachePolicy)
 
                 .setEventPool(executorService)
                 .setCallbackPool(executorService)

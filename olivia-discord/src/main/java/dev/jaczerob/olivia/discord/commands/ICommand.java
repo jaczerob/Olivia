@@ -9,7 +9,13 @@ public interface ICommand {
 
     String description();
 
-    List<? extends OptionData> options();
+    default List<? extends OptionData> options() {
+        return List.of();
+    }
+
+    default boolean ephemeral() {
+        return false;
+    }
 
     void execute(CommandContext context);
 }

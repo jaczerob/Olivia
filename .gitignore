@@ -32,13 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-/grafana-data/
-/prometheus-data/
-/grafana/
-/olivia-data/
-/prometheus/
-/elk/
+data/
 docker-compose.yml
 Dockerfile
-/mongo-data/
-/fortuna-data/
+
+*/application-local.properties

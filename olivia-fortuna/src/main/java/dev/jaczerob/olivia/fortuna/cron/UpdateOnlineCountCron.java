@@ -1,9 +1,6 @@
 package dev.jaczerob.olivia.fortuna.cron;
 
-import dev.jaczerob.olivia.fortuna.api.FortunaAPIClient;
-import dev.jaczerob.olivia.fortuna.api.online.OnlineResponse;
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.MeterRegistry;
+import dev.jaczerob.olivia.fortuna.database.repositories.FortunaRepository;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -13,68 +10,36 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 public class UpdateOnlineCountCron {
     private static final Logger log = LogManager.getLogger();
 
     private final JDA jda;
-    private final FortunaAPIClient fortunaAPIClient;
+    private final FortunaRepository fortunaRepository;
     private final String onlinePlayersChannelID;
-    private final MeterRegistry meterRegistry;
-
-    private final AtomicInteger onlinePlayers = new AtomicInteger();
-    private final Map<String, Integer> onlinePlayersPerChannel = new ConcurrentHashMap<>();
 
     public UpdateOnlineCountCron(
             final JDA jda,
-            final FortunaAPIClient fortunaAPIClient,
-            final @Value("${fortuna.online-players-channel-id}") String onlinePlayersChannelID,
-            final MeterRegistry meterRegistry
+            final FortunaRepository fortunaRepository,
+            final @Value("${fortuna.online-players-channel-id}") String onlinePlayersChannelID
     ) {
         this.jda = jda;
-        this.fortunaAPIClient = fortunaAPIClient;
+        this.fortunaRepository = fortunaRepository;
         this.onlinePlayersChannelID = onlinePlayersChannelID;
-        this.meterRegistry = meterRegistry;
-
-        Gauge.builder("fortuna_players_online", this.onlinePlayers, AtomicInteger::get)
-                .tag("channel", "all")
-                .register(meterRegistry);
     }
 
     @Scheduled(fixedRate = 5 * 60 * 1000)
     public void updateOnlineCount() {
-        final OnlineResponse onlineResponse = this.fortunaAPIClient.getOnlineCount();
         final int onlinePlayers;
-        final boolean serverOnline;
-        if (onlineResponse == null || onlineResponse.getOnlineCount() == null) {
-            log.error("Could not get online count from Fortuna");
-            onlinePlayers = 0;
-            serverOnline = false;
-        } else {
-            onlinePlayers = onlineResponse.getOnlineCount().getUnique();
-            this.onlinePlayers.set(onlinePlayers);
-            serverOnline = true;
 
-            onlineResponse.getOnlineCount().getChannels().forEach((channelName, population) -> {
-                final boolean initializeGauge = !this.onlinePlayersPerChannel.containsKey(channelName);
-                this.onlinePlayersPerChannel.put(channelName, population);
-
-                if (initializeGauge) {
-                    Gauge.builder("fortuna_players_online", this.onlinePlayersPerChannel, f -> f.get(channelName)).tag("channel", channelName).register(this.meterRegistry);
-                }
-            });
+        try {
+            onlinePlayers = this.fortunaRepository.getOnlineCount();
+        } catch (final Throwable exc) {
+            log.error("error getting online count from Fortuna", exc);
+            return;
         }
 
-        final String status;
-        if (serverOnline) {
-            status = "Online Players: %d".formatted(onlinePlayers);
-        } else {
-            status = "Server Offline";
-        }
+        final String status = "Online Players: %d".formatted(onlinePlayers);
 
         this.jda.getPresence().setActivity(Activity.customStatus(status));
         log.info("Updated presence to: {}", status);

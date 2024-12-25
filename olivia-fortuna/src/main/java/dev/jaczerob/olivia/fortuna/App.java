@@ -1,5 +1,6 @@
 package dev.jaczerob.olivia.fortuna;
 
+import feign.Retryer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -26,5 +27,10 @@ public class App {
         final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setSupportedMediaTypes(List.of(MediaType.ALL));
         return mappingJackson2HttpMessageConverter;
+    }
+
+    @Bean
+    public Retryer retryer() {
+        return new Retryer.Default(100L, 3 * 1000L, 10);
     }
 }

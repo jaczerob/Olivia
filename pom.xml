@@ -18,6 +18,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <camel-spring-boot-dependencies.version>4.8.0</camel-spring-boot-dependencies.version>
         <discord-webhooks.version>0.8.4</discord-webhooks.version>
         <JDA.version>5.0.1</JDA.version>
         <json.version>20240303</json.version>
@@ -63,6 +64,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.camel.springboot</groupId>
+                <artifactId>camel-spring-boot-dependencies</artifactId>
+                <version>${camel-spring-boot-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>dev.jaczerob.olivia.common</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
@@ -70,6 +78,11 @@
             <dependency>
                 <groupId>dev.jaczerob.olivia.discord</groupId>
                 <artifactId>discord</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.jaczerob.olivia.notifications</groupId>
+                <artifactId>notifications</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
